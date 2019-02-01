@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 The OpenZipkin Authors
+ * Copyright 2015-2019 The OpenZipkin Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -99,6 +99,24 @@ public abstract class ITSpanStore {
     accept(Span.newBuilder().traceId("1").id("1").build());
 
     allShouldWorkWhenEmpty();
+  }
+
+  @Test public void getTraces_groupsTracesTogether() throws IOException {
+    Span traceASpan1 = Span.newBuilder()
+      .traceId("a")
+      .id("1")
+      .timestamp((TODAY + 1) * 1000L)
+      .localEndpoint(FRONTEND)
+      .build();
+    Span traceASpan2 = traceASpan1.toBuilder().id("1").timestamp((TODAY + 2) * 1000L).build();
+    Span traceBSpan1 = traceASpan1.toBuilder().traceId("b").build();
+    Span traceBSpan2 = traceASpan2.toBuilder().traceId("b").build();
+
+    accept(traceASpan1, traceBSpan1, traceASpan2, traceBSpan2);
+
+    assertThat(sortTraces(store().getTraces(requestBuilder().build()).execute()))
+      .containsExactlyInAnyOrder(asList(traceASpan1, traceASpan2),
+        asList(traceBSpan1, traceBSpan2));
   }
 
   @Test public void getTraces_considersBitsAbove64bit() throws IOException {
