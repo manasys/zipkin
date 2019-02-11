@@ -90,8 +90,8 @@
 
     <!-- zipkin requires exporting /health endpoint -->
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
+      <groupId>com.linecorp.armeria</groupId>
+      <artifactId>armeria-spring-boot-actuator-autoconfigure</artifactId>
     </dependency>
 
     <dependency>

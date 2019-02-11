@@ -20,7 +20,6 @@ import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.server.RedirectService;
 import com.linecorp.armeria.server.Service;
 import com.linecorp.armeria.server.annotation.Options;
-import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.cors.CorsServiceBuilder;
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -88,7 +87,7 @@ public class ZipkinServerConfiguration implements WebMvcConfigurer {
     CorsServiceBuilder corsBuilder = allowedOrigins.equals("*") ? CorsServiceBuilder.forAnyOrigin()
       : CorsServiceBuilder.forOrigins(allowedOrigins.split(","));
 
-    Function<Service<HttpRequest, HttpResponse>, CorsService>
+    Function<Service<HttpRequest, HttpResponse>, ? extends Service<HttpRequest, HttpResponse>>
       corsDecorator = corsBuilder.allowRequestMethods(HttpMethod.GET).newDecorator();
 
     return server -> server
